@@ -18,7 +18,10 @@
         "grep": true,
         "bash": true,
         "websearch": true,
-        "webfetch": true
+        "webfetch": true,
+        "search_research_articles": true,
+        "search_research_articles_advanced": true,
+        "get_researcher_info": true
       }
     },
     "build": {
@@ -61,7 +64,10 @@
         "grep": true,
         "bash": true,
         "webfetch": true,
-        "websearch": true
+        "websearch": true,
+        "search_research_articles": true,
+        "search_research_articles_advanced": true,
+        "get_researcher_info": true
       }
     },
     "code-checker": {
@@ -143,7 +149,10 @@
         "docs_create_school_report": true,
         "docs_create_styled_pdf": true,
         "webfetch": false,
-        "websearch": false
+        "websearch": false,
+        "search_research_articles": true,
+        "search_research_articles_advanced": true,
+        "get_researcher_info": true
       }
     }
   },
@@ -180,6 +189,13 @@
     "ddg-search": {
       "type": "local",
       "command": ["npx", "-y", "@oevortex/ddg_search@latest"],
+      "enabled": true
+    },
+    "researcher-mcp": {
+      "type": "local",
+      "command": [
+        "./researcher-mcp/bin/google-scholar-mcp"
+      ],
       "enabled": true
     }
   }

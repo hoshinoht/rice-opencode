@@ -168,6 +168,183 @@ describe("workplan tools", () => {
     }
   });
 
+  it("ignores forced blank placeholders while applying meaningful updates", async () => {
+    const workspace = mkdtempSync(join(tmpdir(), "workplan-tools-"));
+
+    try {
+      mkdirSync(join(workspace, ".opencode"), { recursive: true });
+
+      await workplan_create.execute(
+        {
+          id: "demo-plan",
+          kind: "general",
+          title: "Demo Plan",
+          goal: "Preserve existing metadata",
+          status: "review",
+          overwrite: false,
+          scope: ["src/app.ts"],
+          nonGoals: ["Do not clear metadata"],
+          constraints: ["Keep generated markdown"],
+          phases: [
+            {
+              id: "phase-anchor",
+              title: "Execution",
+              steps: [{ id: "step-anchor", title: "Patch the tool", action: "Old action", validation: "Run focused checks" }],
+            },
+          ],
+        },
+        toolContext(workspace) as never,
+      );
+
+      await workplan_update.execute(
+        {
+          id: "demo-plan",
+          title: "",
+          goal: "",
+          status: "draft",
+          scope: [],
+          nonGoals: [],
+          constraints: [],
+          planFile: "",
+          planMarkdown: "",
+          specFiles: [],
+          reviewFindings: [],
+          phases: [],
+          updatePhases: [],
+          addPhases: [],
+          updateSteps: [],
+          addSteps: [],
+          addRelevantFiles: [],
+          addSpecFiles: [],
+          removeSpecFiles: [],
+          addReviewFindings: [],
+          appendNotes: ["Meaningful note"],
+        },
+        toolContext(workspace) as never,
+      );
+
+      const document = JSON.parse(readFileSync(join(workspace, ".opencode", "workplan", "demo-plan.json"), "utf8")) as {
+        title: string;
+        goal: string;
+        status: string;
+        scope: string[];
+        nonGoals: string[];
+        constraints: string[];
+        planFile: string;
+        phases: Array<{ id: string; steps: Array<{ id: string; action?: string }> }>;
+        notes: string[];
+      };
+      const markdown = readFileSync(join(workspace, ".opencode", "workplan", "demo-plan.md"), "utf8");
+
+      expect(document.title).toBe("Demo Plan");
+      expect(document.goal).toBe("Preserve existing metadata");
+      expect(document.status).toBe("review");
+      expect(document.scope).toEqual(["src/app.ts"]);
+      expect(document.nonGoals).toEqual(["Do not clear metadata"]);
+      expect(document.constraints).toEqual(["Keep generated markdown"]);
+      expect(document.planFile).toBe(".opencode/workplan/demo-plan.md");
+      expect(document.phases.map((phase) => phase.id)).toEqual(["phase-anchor"]);
+      expect(document.phases[0]?.steps[0]?.action).toBe("Old action");
+      expect(document.notes).toEqual(["Meaningful note"]);
+      expect(markdown).toContain("Meaningful note");
+      expect(markdown).toContain("Overall status: review");
+    } finally {
+      rmSync(workspace, { recursive: true, force: true });
+    }
+  });
+
+  it("ignores forced empty phase replacement and blank nested step patch fields", async () => {
+    const workspace = mkdtempSync(join(tmpdir(), "workplan-tools-"));
+
+    try {
+      mkdirSync(join(workspace, ".opencode"), { recursive: true });
+
+      await workplan_create.execute(
+        {
+          id: "demo-plan",
+          kind: "general",
+          goal: "Patch one step safely",
+          status: "review",
+          overwrite: false,
+          phases: [
+            {
+              id: "phase-anchor",
+              title: "Execution",
+              status: "review",
+              steps: [
+                {
+                  id: "step-anchor",
+                  title: "Patch the tool",
+                  target: "src/tool.ts",
+                  action: "Old action",
+                  validation: "Run old checks",
+                  status: "review",
+                },
+              ],
+            },
+          ],
+        },
+        toolContext(workspace) as never,
+      );
+
+      await workplan_update.execute(
+        {
+          id: "demo-plan",
+          title: "",
+          goal: "",
+          status: "draft",
+          scope: [],
+          nonGoals: [],
+          constraints: [],
+          planFile: "",
+          planMarkdown: "",
+          specFiles: [],
+          reviewFindings: [],
+          phases: [],
+          updatePhases: [],
+          addPhases: [],
+          updateSteps: [
+            {
+              phaseId: "phase-anchor",
+              stepId: "step-anchor",
+              title: "",
+              target: "",
+              action: "New action",
+              validation: "",
+              status: "draft",
+            },
+          ],
+          addSteps: [],
+          addRelevantFiles: [],
+          addSpecFiles: [],
+          removeSpecFiles: [],
+          addReviewFindings: [],
+          appendNotes: [],
+        },
+        toolContext(workspace) as never,
+      );
+
+      const document = JSON.parse(readFileSync(join(workspace, ".opencode", "workplan", "demo-plan.json"), "utf8")) as {
+        status: string;
+        phases: Array<{ id: string; status: string; steps: Array<{ title: string; target?: string; action?: string; validation?: string; status: string }> }>;
+      };
+
+      expect(document.status).toBe("review");
+      expect(document.phases).toHaveLength(1);
+      expect(document.phases[0]?.id).toBe("phase-anchor");
+      expect(document.phases[0]?.status).toBe("review");
+      expect(document.phases[0]?.steps[0]).toMatchObject({
+        title: "Patch the tool",
+        target: "src/tool.ts",
+        action: "New action",
+        validation: "Run old checks",
+        status: "review",
+      });
+    } finally {
+      rmSync(workspace, { recursive: true, force: true });
+    }
+  });
+
   it("preserves insertion order for repeated after-step or after-phase inserts", async () => {
     const workspace = mkdtempSync(join(tmpdir(), "workplan-tools-"));
 

@@ -32,6 +32,65 @@ import {
 } from "./shared";
 import { WORKPLAN_STATUSES } from "./types";
 
+function nonBlankString(value: string | undefined): string | undefined {
+  if (value === undefined) return undefined;
+  return value.trim() ? value : undefined;
+}
+
+function nonEmptyArray<T>(value: T[] | undefined): T[] | undefined {
+  return value?.length ? value : undefined;
+}
+
+function nonDefaultStatus(value: (typeof WORKPLAN_STATUSES)[number] | undefined): (typeof WORKPLAN_STATUSES)[number] | undefined {
+  // Tool callers in some OpenCode frontends provide the first enum value for
+  // omitted optional status fields. Treat draft as the placeholder value and
+  // use workplan_reset for explicit draft resets.
+  if (value === undefined || value === "draft") return undefined;
+  return value;
+}
+
+function compactPhasePatches(patches: Array<{ phaseId: string; title?: string; status?: (typeof WORKPLAN_STATUSES)[number] }> | undefined) {
+  return nonEmptyArray(patches)
+    ?.map((patch) => ({
+      ...patch,
+      title: nonBlankString(patch.title),
+      status: nonDefaultStatus(patch.status),
+    }))
+    .filter((patch) => patch.title !== undefined || patch.status !== undefined);
+}
+
+function compactStepPatches(
+  patches:
+    | Array<{
+        phaseId: string;
+        stepId: string;
+        title?: string;
+        target?: string;
+        action?: string;
+        validation?: string;
+        status?: (typeof WORKPLAN_STATUSES)[number];
+      }>
+    | undefined,
+) {
+  return nonEmptyArray(patches)
+    ?.map((patch) => ({
+      ...patch,
+      title: nonBlankString(patch.title),
+      target: nonBlankString(patch.target),
+      action: nonBlankString(patch.action),
+      validation: nonBlankString(patch.validation),
+      status: nonDefaultStatus(patch.status),
+    }))
+    .filter(
+      (patch) =>
+        patch.title !== undefined ||
+        patch.target !== undefined ||
+        patch.action !== undefined ||
+        patch.validation !== undefined ||
+        patch.status !== undefined,
+    );
+}
+
 export const workplan_update = tool({
   description: "Update a structured workplan's JSON metadata, linked Markdown plan path, files, findings, or targeted phase and step fields without rewriting the whole document manually.",
   args: {
@@ -66,35 +125,78 @@ export const workplan_update = tool({
     const previousPlanContent = await readOptionalFile(workspaceRoot, previousPlanPath, "Plan file");
     const previousPlanWasGenerated = previousPlanContent !== null && previousPlanContent === renderWorkplanMarkdown(previousDocument);
 
+    const title = nonBlankString(args.title);
+    const goal = nonBlankString(args.goal);
+    const status = nonDefaultStatus(args.status);
+    const scope = nonEmptyArray(args.scope);
+    const nonGoals = nonEmptyArray(args.nonGoals);
+    const constraints = nonEmptyArray(args.constraints);
+    const planFile = nonBlankString(args.planFile);
+    const planMarkdown = nonBlankString(args.planMarkdown);
+    const specFiles = nonEmptyArray(args.specFiles);
+    const reviewFindings = nonEmptyArray(args.reviewFindings);
+    const phases = nonEmptyArray(args.phases);
+    const updatePhases = compactPhasePatches(args.updatePhases);
+    const addPhases = nonEmptyArray(args.addPhases);
+    const updateSteps = compactStepPatches(args.updateSteps);
+    const addSteps = nonEmptyArray(args.addSteps);
+    const addRelevantFiles = nonEmptyArray(args.addRelevantFiles);
+    const addSpecFiles = nonEmptyArray(args.addSpecFiles);
+    const removeSpecFiles = nonEmptyArray(args.removeSpecFiles);
+    const addReviewFindings = nonEmptyArray(args.addReviewFindings);
+    const appendNotes = nonEmptyArray(args.appendNotes);
+    const updateFieldNames = [
+      title !== undefined && "title",
+      goal !== undefined && "goal",
+      status !== undefined && "status",
+      scope !== undefined && "scope",
+      nonGoals !== undefined && "nonGoals",
+      constraints !== undefined && "constraints",
+      planFile !== undefined && "planFile",
+      planMarkdown !== undefined && "planMarkdown",
+      specFiles !== undefined && "specFiles",
+      reviewFindings !== undefined && "reviewFindings",
+      phases !== undefined && "phases",
+      updatePhases?.length && "updatePhases",
+      addPhases !== undefined && "addPhases",
+      updateSteps?.length && "updateSteps",
+      addSteps !== undefined && "addSteps",
+      addRelevantFiles !== undefined && "addRelevantFiles",
+      addSpecFiles !== undefined && "addSpecFiles",
+      removeSpecFiles !== undefined && "removeSpecFiles",
+      addReviewFindings !== undefined && "addReviewFindings",
+      appendNotes !== undefined && "appendNotes",
+    ].filter((field): field is string => Boolean(field));
+
     context.metadata({
       title: "Update workplan",
       metadata: {
         workspaceRoot,
         id: document.id,
-        updateFields: Object.keys(args).filter((key) => !["workspaceRoot", "id"].includes(key)),
+        updateFields: updateFieldNames,
       },
     });
 
     const usesTargetedIds = Boolean(
-      args.updatePhases?.length || args.updateSteps?.length || args.addSteps?.length || args.addPhases?.some((entry) => entry.afterPhaseId),
+      updatePhases?.length || updateSteps?.length || addSteps?.length || addPhases?.some((entry) => entry.afterPhaseId),
     );
     if (usesTargetedIds) assertUniqueWorkplanIds(document);
 
-    if (args.title !== undefined) document.title = args.title.trim() || null;
-    if (args.goal !== undefined) document.goal = args.goal.trim();
-    if (args.status !== undefined) document.status = args.status;
-    if (args.scope !== undefined) document.scope = uniqueStrings(args.scope);
-    if (args.nonGoals !== undefined) document.nonGoals = uniqueStrings(args.nonGoals);
-    if (args.constraints !== undefined) document.constraints = uniqueStrings(args.constraints);
-    if (args.planFile !== undefined) document.planFile = normalizePlanFile(workspaceRoot, args.planFile);
-    if (args.specFiles !== undefined) document.specFiles = normalizeSpecFiles(workspaceRoot, args.specFiles);
-    if (args.reviewFindings !== undefined) document.reviewFindings = args.reviewFindings.map(normalizeFinding);
-    if (args.phases !== undefined) {
+    if (title !== undefined) document.title = title.trim() || null;
+    if (goal !== undefined) document.goal = goal.trim();
+    if (status !== undefined) document.status = status;
+    if (scope !== undefined) document.scope = uniqueStrings(scope);
+    if (nonGoals !== undefined) document.nonGoals = uniqueStrings(nonGoals);
+    if (constraints !== undefined) document.constraints = uniqueStrings(constraints);
+    if (planFile !== undefined) document.planFile = normalizePlanFile(workspaceRoot, planFile);
+    if (specFiles !== undefined) document.specFiles = normalizeSpecFiles(workspaceRoot, specFiles);
+    if (reviewFindings !== undefined) document.reviewFindings = reviewFindings.map(normalizeFinding);
+    if (phases !== undefined) {
       const usedPhaseIds = new Set<string>();
-      document.phases = args.phases.map((phase, index) => normalizePhase(phase, index, { usedPhaseIds }));
+      document.phases = phases.map((phase, index) => normalizePhase(phase, index, { usedPhaseIds }));
     }
-    if (args.updatePhases?.length) {
-      for (const patch of args.updatePhases) {
+    if (updatePhases?.length) {
+      for (const patch of updatePhases) {
         const { phase } = getPhaseById(document, patch.phaseId);
         if (patch.title !== undefined) {
           const title = patch.title.trim();
@@ -104,10 +206,10 @@ export const workplan_update = tool({
         if (patch.status !== undefined) phase.status = patch.status;
       }
     }
-    if (args.addPhases?.length) {
+    if (addPhases?.length) {
       const usedPhaseIds = new Set(document.phases.map((phase) => phase.id));
       const insertionOffsets = new Map<string, number>();
-      for (const insertion of args.addPhases) {
+      for (const insertion of addPhases) {
         const phase = normalizePhase(insertion.phase, document.phases.length, { usedPhaseIds });
         if (!insertion.afterPhaseId) {
           document.phases.push(phase);
@@ -120,8 +222,8 @@ export const workplan_update = tool({
         insertionOffsets.set(anchorPhase.id, offset + 1);
       }
     }
-    if (args.updateSteps?.length) {
-      for (const patch of args.updateSteps) {
+    if (updateSteps?.length) {
+      for (const patch of updateSteps) {
         const { phase } = getPhaseById(document, patch.phaseId);
         const { step } = getStepById(phase, patch.stepId);
 
@@ -136,9 +238,9 @@ export const workplan_update = tool({
         if (patch.status !== undefined) step.status = patch.status;
       }
     }
-    if (args.addSteps?.length) {
+    if (addSteps?.length) {
       const insertionOffsets = new Map<string, number>();
-      for (const insertion of args.addSteps) {
+      for (const insertion of addSteps) {
         const { phase } = getPhaseById(document, insertion.phaseId);
         const usedStepIds = new Set(phase.steps.map((step) => step.id));
         const step = normalizeStep(insertion.step, phase.steps.length, { usedIds: usedStepIds });
@@ -154,27 +256,27 @@ export const workplan_update = tool({
         insertionOffsets.set(insertionKey, offset + 1);
       }
     }
-    if (args.addRelevantFiles?.length) {
-      document.relevantFiles = uniqueStrings([...document.relevantFiles, ...args.addRelevantFiles]);
+    if (addRelevantFiles?.length) {
+      document.relevantFiles = uniqueStrings([...document.relevantFiles, ...addRelevantFiles]);
     }
-    if (args.addSpecFiles?.length) {
-      document.specFiles = normalizeSpecFiles(workspaceRoot, [...document.specFiles, ...args.addSpecFiles]);
+    if (addSpecFiles?.length) {
+      document.specFiles = normalizeSpecFiles(workspaceRoot, [...document.specFiles, ...addSpecFiles]);
     }
-    if (args.removeSpecFiles?.length) {
-      const removals = new Set(normalizeSpecFiles(workspaceRoot, args.removeSpecFiles));
+    if (removeSpecFiles?.length) {
+      const removals = new Set(normalizeSpecFiles(workspaceRoot, removeSpecFiles));
       document.specFiles = document.specFiles.filter((specFile) => !removals.has(specFile));
     }
-    if (args.addReviewFindings?.length) {
-      document.reviewFindings.push(...args.addReviewFindings.map(normalizeFinding));
+    if (addReviewFindings?.length) {
+      document.reviewFindings.push(...addReviewFindings.map(normalizeFinding));
     }
-    if (args.appendNotes?.length) {
-      document.notes = uniqueStrings([...document.notes, ...args.appendNotes]);
+    if (appendNotes?.length) {
+      document.notes = uniqueStrings([...document.notes, ...appendNotes]);
     }
 
     document.updatedAt = new Date().toISOString();
     const planPath = resolveLinkedPlanPath(workspaceRoot, document);
 
-    if (args.planFile !== undefined && planPath !== previousPlanPath) {
+    if (planFile !== undefined && planPath !== previousPlanPath) {
       try {
         await fs.access(planPath);
         throw new Error(`Refusing to overwrite existing plan file: ${document.planFile}`);
@@ -204,14 +306,14 @@ export const workplan_update = tool({
       "appendNotes",
     ]);
     const shouldRefreshGeneratedMarkdown =
-      args.planMarkdown === undefined &&
-      args.planFile === undefined &&
+      planMarkdown === undefined &&
+      planFile === undefined &&
       previousPlanWasGenerated &&
-      Object.keys(args).some((key) => refreshGeneratedMarkdownFields.has(key));
+      updateFieldNames.some((key) => refreshGeneratedMarkdownFields.has(key));
 
-    if (args.planMarkdown !== undefined) {
-      await writeWorkplanMarkdown(workspaceRoot, planPath, args.planMarkdown);
-    } else if (args.planFile !== undefined) {
+    if (planMarkdown !== undefined) {
+      await writeWorkplanMarkdown(workspaceRoot, planPath, planMarkdown);
+    } else if (planFile !== undefined) {
       await writeWorkplanMarkdown(workspaceRoot, planPath, previousPlanWasGenerated ? renderWorkplanMarkdown(document) : previousPlanContent ?? renderWorkplanMarkdown(document));
     } else if (shouldRefreshGeneratedMarkdown) {
       await writeWorkplanMarkdown(workspaceRoot, planPath, renderWorkplanMarkdown(document));

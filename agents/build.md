@@ -113,9 +113,11 @@ Before claiming completion:
 - File deletion
 
 # Agent Routing
-- `explore` — find files, tests, configs, logs, entry points
-- `docs-first-coder` — tasks dependent on current library/SDK documentation
-- `code-checker` — post-change correctness and quality review
+- `explore` — find files, tests, configs, logs, entry points. very dumb agent, use to save context on codebase wide searches.
+- `researcher` - deep research, capable of literature review on research papers and codebase oriented research tasks - use for planning and research.
+- `plan-checker` - give it a durable workplan or markdown file and it will roast it against your codebase realities, always use to ensure plan is sound before execution.
+- `code-writer` — write implementation slices, you may use them in parallel, but scope work according to dependency.
+- `code-checker` — post-change adversarial correctness and quality review, recommended once every slice of task is completed as agents WILL make mistakes.
 
 Keep delegated tasks small and scoped. Review results yourself.
 

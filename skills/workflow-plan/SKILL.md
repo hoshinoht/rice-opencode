@@ -14,7 +14,7 @@ metadata and linked Markdown detail, without implementing production code.
 
 # PLAN mode boundary
 
-- In PLAN mode, do not implement application changes.
+- In PLAN mode, do not implement application changes. Only use the workplan tools to edit plans.
 - Use workplan tools to persist plan state instead of relying on chat memory.
 - Direct edits should be limited to planning artifacts only when a workplan tool cannot express the change.
 - End with a concrete handoff the user can approve or pass to an execution agent.
@@ -26,12 +26,15 @@ metadata and linked Markdown detail, without implementing production code.
 3. Check for existing workplans before creating a new one.
 4. Create or adopt one stable workplan id.
 5. Capture structured state in JSON and detailed rationale/handoff prose in Markdown.
-6. Ask only blocking questions that materially affect scope, architecture, safety, or validation.
-7. Validate the workplan.
-8. If validation or review finds issues, revise and revalidate.
-9. Return a short handoff: workplan id, readiness, open questions, and execution command/agent suggestion.
+6. Ask and continuously go back and forth with the user on action items and clarifications that materially affect scope, architecture, safety, or validation.
+7. DO NOT continue with an under-specified plan unless the user explicitly accepts the remaining uncertainty. Keep the user in the loop at every material step. Default to comprehensive planning.
+8. When writing the plan, consider execution boundaries with parallel subagents. Identify areas that are parallelizable and areas with serial or cross-dependency constraints. The workflow should be massively parallel where possible, but take incredible care with cross dependencies and do not plan useless tiny tasks; subagents are capable engineers on their own.
+9. The workflow plan should contain this execution workflow as specified: Slice A (parallel where necessary) `code-writer` -> `code-checker` (check entire slice, or sub-slices if too large) -> `code-writer` (Slice B) -> `code-checker` (Slice B), and so on until the task is completed.
+10. Validate the workplan, using the tool AND the `plan-checker` agent.
+11. If validation or `plan-checker` review finds issues, revise and revalidate.
+12. Return a short handoff: workplan id, readiness, open questions, and execution command/agent suggestion.
 
-DO NOT load the workflow-execute skill unless planning has been completed. its out of scope for planning.
+DO NOT load the workflow-execute skill unless planning has been completed. It's out of scope for planning.
 
 # Workplan tool subset for planning
 
@@ -60,6 +63,7 @@ DO NOT load the workflow-execute skill unless planning has been completed. its o
   - linked `planFile`
 - Omit fields that should not change.
 - Never pass blank strings for optional fields such as `planFile` or `planMarkdown`.
+- If a frontend/tool schema displays blank optional placeholders anyway, treat them as omitted. Do not retry the same failing `workplan_update` call in a loop; use `workplan_patch` for Markdown-only changes, `workplan_reset` for explicit draft resets, or stop and report that the loaded workplan tool is stale.
 - Prefer targeted `updatePhases`, `updateSteps`, `addPhases`, and `addSteps` over replacing the whole phase list when only one item changed.
 
 ## Updating Markdown prose

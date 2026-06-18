@@ -17,16 +17,20 @@ review while keeping workplan state current.
 - PLANNING has been completed or the user explicitly accepts executing with a partial plan.
 - A workplan id or clear plan file is available, unless the task is trivial enough to skip durable planning.
 - The requested execution scope is clear enough to avoid guessing.
+- If the plan is well specified, continue autonomously until completion; do not stop unless validation, safety, scope, dependency, or a user-decision issue blocks progress.
+- If the plan hits a material snag or would require scope creep, ask the user instead of deciding unilaterally.
+- Be religious about updating the workplan, as the harness may undergo context compaction and lose critical detail.
 
 # Execution methodology
-
+0. If the plan has not already been vetted by `plan-checker`, do so immediately.
+0a. Ensure the plan passes codebase reality checks with `plan-checker`; apply recommended changes autonomously unless they introduce material scope creep, architecture changes, dependency changes, or user-facing tradeoffs.
 1. Read or adopt the workplan.
-2. Validate the workplan before changing implementation files.
+2. Validate the workplan before changing implementation files (if not already done so).
 3. Read the linked Markdown plan and any linked `specFiles`.
 4. Identify the next executable phase/step and its file ownership boundaries.
-5. Decide whether work can be done directly or should be delegated to `@code-writer`.
-6. Run the narrowest useful validation after each implementation pass.
-7. Use `@code-checker` for meaningful changes.
+5. Decide whether work can be done directly or should be delegated to `@code-writer` (parallel as planned or as necessary).
+6. If there are critical cross-dependencies overlooked by the plan, you may run `code-writer` in serial (one by one) instead.
+7. Run the narrowest useful validation after small changes. For medium-large/potentially consequential changes, run `@code-checker` adversarial review.
 8. Record progress, validation, and review findings in the workplan.
 9. Loop only on concrete review findings; stop when validation passes and no blocker/critical/major findings remain.
 
@@ -47,6 +51,7 @@ review while keeping workplan state current.
   - add review findings from `@code-checker`
   - mark findings resolved after a fix pass
 - Omit unchanged optional fields. Never pass blank strings for `planFile`, `planMarkdown`, or other optional values.
+- If a frontend/tool schema displays blank optional placeholders anyway, treat them as omitted. Do not retry the same failing `workplan_update` call in a loop; use `workplan_patch` for Markdown-only changes, `workplan_reset` for explicit draft resets, or stop and report that the loaded workplan tool is stale.
 - Do not use full `planMarkdown` for routine progress updates.
 
 ## Markdown execution notes
@@ -80,7 +85,6 @@ Every non-trivial handoff to `@code-writer` should include all of the following 
 - `inputs`: exact facts already established from the user, workplan, and local evidence
 - `validation`: precise commands or smoke checks to run for this pass
 - `deliverable`: what the child must return to the parent
-Tell it to "use workflows execute skill" so it loads the appropriate skill.
 
 Preferred handoff shape:
 

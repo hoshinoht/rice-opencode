@@ -7,6 +7,9 @@
     "opencode-mem@2.13.0",
     "opencode-background-agents@0.1.1"
   ],
+  "tools": {
+    "hound_smart_search": false
+  },
   "mcp": {
     "github": {
       "type": "remote",
@@ -34,13 +37,20 @@
       "command": ["sh", ".opencode/researcher-mcp.sh"],
       "enabled": true
     },
-    "brave-search": {
-      "type": "local",
-      "command": ["npx", "-y", "@modelcontextprotocol/server-brave-search"],
-      "environment": {
-        "BRAVE_API_KEY": "{env:BRAVE_API_KEY}"
+    "exa": {
+      "type": "remote",
+      "url": "https://mcp.exa.ai/mcp?tools=web_search_exa",
+      "oauth": false,
+      "headers": {
+        "x-api-key": "{file:~/.config/opencode/.exa-api-key}"
       },
       "enabled": true
+    },
+    "hound": {
+      "type": "local",
+      "command": ["uvx", "--from", "hound-mcp[all]==12.4.1", "hound"],
+      "enabled": true,
+      "timeout": 120000
     },
     "ddg-search": {
       "type": "local",

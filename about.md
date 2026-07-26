@@ -9,7 +9,7 @@ This repository contains my OpenCode-AI configuration, including:
 - **Custom agents** - Specialized AI agent prompts for different tasks
 - **Document generation plugin package** - Plugin-v2-compliant Pandoc-based docs tools under `packages/docs`
 - **Templates** - LaTeX templates for IEEE papers, school reports (SIT/UofG)
-- **MCP server configs** - GitHub, Context7, DeepWiki, Brave Search, DDG Search
+- **MCP server configs** - GitHub, Context7, DeepWiki, Exa search, Hound fetch, DDG fallback
 
 ## Structure
 
@@ -97,18 +97,23 @@ Its tool implementation provides:
 ## Setup
 
 1. Copy to `~/.config/opencode/` or use as project-local config
-2. Create `.env` with API keys:
+2. Create local secret files:
    ```
    GITHUB_PAT=your_github_pat
-   BRAVE_API_KEY=your_brave_key
    CONTEXT7_API_KEY=your_context7_key
    ```
+   Save the raw Exa API key without a trailing newline in `~/.config/opencode/.exa-api-key`, then run `chmod 600 ~/.config/opencode/.exa-api-key`.
 3. Install dependencies: `bun install` or `npm install`
+4. Prewarm the pinned Hound tool: `uvx --from 'hound-mcp[all]==12.4.1' hound -v`
+5. Run `uvx --from 'hound-mcp[all]==12.4.1' hound --doctor`, then install Chromium only if the doctor reports it missing
+6. Verify Exa and Hound with `opencode mcp list`; Exa uses the `x-api-key` header and has OAuth disabled
 
 ## Notes
 
-- `opencode.json` uses `{env:VAR}` syntax for secrets - safe to commit
+- `opencode.json` uses `{env:VAR}` and `{file:path}` substitutions for secrets - safe to commit
+- open-web search routes to `exa_web_search_exa`; known-URL retrieval routes to `hound_smart_fetch`
+- Hound's duplicate `hound_smart_search` tool is disabled
 - the docs plugin is loaded locally from `./packages/docs`
 - `researcher-mcp` still expects a shell-script launcher path for now
-- Actual API keys should be in `.env` (gitignored)
+- Actual API keys should be in `.env` or `~/.config/opencode/.exa-api-key`, outside tracked config
 - Templates require LaTeX installation (texlive-full recommended)

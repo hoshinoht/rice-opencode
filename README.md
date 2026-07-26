@@ -41,8 +41,9 @@ Available workplan tools:
 - **GitHub Copilot** — Code search and repository intelligence
 - **DeepWiki** — Repository documentation and structure analysis
 - **Context7** — Library documentation queries
-- **Brave Search** — Web search via Brave API
-- **DuckDuckGo Search** — Alternative web search
+- **Exa** — Primary open-web search through the native remote MCP
+- **Hound** — Local webpage, PDF, and crawl retrieval with browser fallback
+- **DuckDuckGo Search** — Alternative fallback search
 
 ### Document Generation Plugin
 
@@ -170,14 +171,44 @@ In this repo, we intentionally keep the stable docs feature separate and keep ex
    # plugin: ["./packages/docs", ...]
    ```
 
-3. **Create `.env` with API keys:**
+3. **Create local secret files:**
    ```bash
+   # Environment-backed credentials
    GITHUB_PAT=your_github_pat
-   BRAVE_API_KEY=your_brave_key
    CONTEXT7_API_KEY=your_context7_key
    ```
+   Save the Exa API key in the global file read by `opencode.json`:
+   ```bash
+   mkdir -p "$HOME/.config/opencode"
+   read -rsp 'Exa API key: ' EXA_API_KEY
+   printf '%s' "$EXA_API_KEY" > "$HOME/.config/opencode/.exa-api-key"
+   chmod 600 "$HOME/.config/opencode/.exa-api-key"
+   unset EXA_API_KEY
+   printf '\n'
+   ```
+   The key stays outside this repository. `.exa-api-key` is also gitignored
+   defensively in case one is created in the checkout by mistake.
 
-4. **Install LaTeX** (for document generation):
+4. **Prewarm and diagnose the pinned Hound MCP tool:**
+   ```bash
+   uvx --from 'hound-mcp[all]==12.4.1' hound -v
+   uvx --from 'hound-mcp[all]==12.4.1' hound --doctor
+   ```
+   OpenCode launches this same pinned environment through `uvx`, avoiding
+   user-specific executable paths. If the doctor reports that Chromium is
+   unavailable, install it into Playwright's user cache:
+   ```bash
+   uvx --from 'hound-mcp[all]==12.4.1' playwright install chromium
+   ```
+
+5. **Verify the MCP connections:**
+   ```bash
+   opencode mcp list
+   ```
+   Exa OAuth is disabled because the MCP sends the local API key through the
+   `x-api-key` header.
+
+6. **Install LaTeX** (for document generation):
    ```bash
    # Ubuntu/Debian
    sudo apt install texlive-full
@@ -246,18 +277,21 @@ Project skill available:
 
 ## Configuration Notes
 
-- `opencode.json` uses `{env:VAR}` syntax for secrets — safe to commit
+- `opencode.json` uses `{env:VAR}` and `{file:path}` substitutions for secrets — safe to commit
 - Agents/commands/skills are loaded from their directories directly
 - The local docs plugin is loaded from `./packages/docs`
+- Open-web discovery uses `exa_web_search_exa`; known URLs are retrieved with `hound_smart_fetch`
+- Hound's duplicate `hound_smart_search` tool is disabled so Exa remains the canonical search path
 - `researcher-mcp` is still shell-script based for now and expected to resolve via `.opencode/researcher-mcp.sh`
-- Actual API keys should be in `.env` (gitignored)
+- Actual API keys should be in `.env` or `~/.config/opencode/.exa-api-key`, outside tracked config
 
 ## Requirements
 
 - [OpenCode](https://opencode.ai) AI CLI
 - Node.js / Bun runtime
+- [uv](https://docs.astral.sh/uv/) for the pinned Hound runtime
 - LaTeX installation (for document generation)
-- API keys for enabled MCP servers
+- API keys for enabled MCP servers that use explicit headers
 
 ## License
 

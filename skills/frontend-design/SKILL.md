@@ -1,11 +1,11 @@
 ---
 name: frontend-design
-description: "Designs, implements, and reviews product UI, dashboards, tables/lists, forms, responsive layouts, and landing pages. Enforces task-first hierarchy, accessibility, and rule-linked evidence."
+description: "load this skill when doing any frontend related work or review."
 license: MIT
 compatibility: opencode
 metadata:
-  version: 0.3.0-concise
-  author: Lucas + Hermes Agent
+  version: 0.3.0
+  author: Lucas
   tags: ui, ux, hci, gestalt, dashboards, mobile, accessibility, information-architecture
   related-skills: design-md, popular-web-designs
 ---

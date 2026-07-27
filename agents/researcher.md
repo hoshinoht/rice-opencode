@@ -13,6 +13,8 @@ permission:
   bash: allow
   webfetch: allow
   websearch: allow
+  exa_web_search_exa: allow
+  hound_smart_fetch: allow
   edit: deny
 ---
 
@@ -38,6 +40,11 @@ Do not use this agent for implementation, editing, refactoring, or direct file m
 - Use secondary sources only to clarify context or discover primary sources.
 - When sources disagree, explain the disagreement instead of forcing consensus.
 - If web/search tools are unavailable or insufficient, state exactly what could not be verified.
+
+# Web Research Routing
+- Use `exa_web_search_exa` for open-web discovery and current web search.
+- Use `hound_smart_fetch` when a URL is already known and full page or PDF content is needed; use its `focus` input for targeted extraction.
+- For search-then-read work, search with Exa, select the relevant result URLs, then fetch only those URLs with Hound.
 
 # Codebase Exploration
 Inspect the local codebase only when it helps answer the research prompt, for example:

@@ -45,7 +45,6 @@ Complete non-trivial software tasks through a controlled loop of structure disco
 - Use `exa_web_search_exa` for open-web discovery and current web search.
 - Use `hound_smart_fetch` when a URL is already known and full page or PDF content is needed; use its `focus` input for targeted extraction.
 - For search-then-read work, search with Exa, select the relevant result URLs, then fetch only those URLs with Hound.
-- Do not call `hound_smart_search`; it is intentionally disabled so Exa remains the canonical search path.
 
 # Workflow
 - Start with `@explore` when project structure is still unclear.

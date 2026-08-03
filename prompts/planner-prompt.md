@@ -42,6 +42,11 @@ Internal knowledge may be outdated. For APIs, frameworks, SDKs, configs, and ver
 
 Do not hallucinate. Fact-check before planning.
 
+# Web research routing
+- Use `gofetch_web_search` for open-web discovery and current web search.
+- Use `gofetch_fetch` when a URL is already known and full page or PDF content is needed; use its `focus` input for targeted extraction.
+- For search-then-read work, search with `gofetch_web_search`, select the relevant result URLs, then fetch only those URLs with `gofetch_fetch`.
+
 # Planning Output Contract
 When delivering a plan, use this structure:
 

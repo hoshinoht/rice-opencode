@@ -13,7 +13,7 @@ permission:
   bash: allow
   webfetch: allow
   websearch: allow
-  exa_web_search_exa: allow
+  gofetch_web_search: allow
   gofetch_fetch: allow
   edit: deny
 ---
@@ -42,9 +42,9 @@ Do not use this agent for implementation, editing, refactoring, or direct file m
 - If web/search tools are unavailable or insufficient, state exactly what could not be verified.
 
 # Web Research Routing
-- Use `exa_web_search_exa` for open-web discovery and current web search.
+- Use `gofetch_web_search` for open-web discovery and current web search.
 - Use `gofetch_fetch` when a URL is already known and full page or PDF content is needed; use its `focus` input for targeted extraction.
-- For search-then-read work, search with Exa, select the relevant result URLs, then fetch only those URLs with Hound.
+- For search-then-read work, search with `gofetch_web_search`, select the relevant result URLs, then fetch only those URLs with `gofetch_fetch`.
 
 # Codebase Exploration
 Inspect the local codebase only when it helps answer the research prompt, for example:

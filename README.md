@@ -41,9 +41,8 @@ Available workplan tools:
 - **GitHub Copilot** — Code search and repository intelligence
 - **DeepWiki** — Repository documentation and structure analysis
 - **Context7** — Library documentation queries
-- **Exa** — Primary open-web search through the native remote MCP
-- **Hound** — Local webpage, PDF, and crawl retrieval with browser fallback
-- **DuckDuckGo Search** — Alternative fallback search
+- **gofetch** — Open-web search plus webpage/PDF retrieval via the local `gofetch-mcp` submodule (Exa API when `.exa-api-key` is present, keyless DuckDuckGo/Mojeek fallback)
+- **Exa** — Remote search MCP, kept in config but disabled; `gofetch_web_search` is the canonical search path
 
 ### Document Generation Plugin
 
@@ -177,7 +176,7 @@ In this repo, we intentionally keep the stable docs feature separate and keep ex
    GITHUB_PAT=your_github_pat
    CONTEXT7_API_KEY=your_context7_key
    ```
-   Save the Exa API key in the global file read by `opencode.json`:
+   Save the Exa API key in the global file read by gofetch-mcp:
    ```bash
    mkdir -p "$HOME/.config/opencode"
    read -rsp 'Exa API key: ' EXA_API_KEY
@@ -189,24 +188,18 @@ In this repo, we intentionally keep the stable docs feature separate and keep ex
    The key stays outside this repository. `.exa-api-key` is also gitignored
    defensively in case one is created in the checkout by mistake.
 
-4. **Prewarm and diagnose the pinned Hound MCP tool:**
+4. **Build the gofetch MCP binary:**
    ```bash
-   uvx --from 'hound-mcp[all]==12.4.1' hound -v
-   uvx --from 'hound-mcp[all]==12.4.1' hound --doctor
-   ```
-   OpenCode launches this same pinned environment through `uvx`, avoiding
-   user-specific executable paths. If the doctor reports that Chromium is
-   unavailable, install it into Playwright's user cache:
-   ```bash
-   uvx --from 'hound-mcp[all]==12.4.1' playwright install chromium
+   git submodule update --init mcps/gofetch-mcp
+   make -C mcps/gofetch-mcp build   # -> mcps/gofetch-mcp/bin/gofetch
    ```
 
 5. **Verify the MCP connections:**
    ```bash
    opencode mcp list
    ```
-   Exa OAuth is disabled because the MCP sends the local API key through the
-   `x-api-key` header.
+   The remote `exa` entry stays disabled in `opencode.json`; gofetch reads the
+   same `.exa-api-key` file directly.
 
 6. **Install LaTeX** (for document generation):
    ```bash
@@ -280,8 +273,8 @@ Project skill available:
 - `opencode.json` uses `{env:VAR}` and `{file:path}` substitutions for secrets — safe to commit
 - Agents/commands/skills are loaded from their directories directly
 - The local docs plugin is loaded from `./packages/docs`
-- Open-web discovery uses `exa_web_search_exa`; known URLs are retrieved with `hound_smart_fetch`
-- Hound's duplicate `hound_smart_search` tool is disabled so Exa remains the canonical search path
+- Open-web discovery uses `gofetch_web_search`; known URLs are retrieved with `gofetch_fetch`
+- The remote Exa MCP entry is kept in `opencode.json` but disabled; gofetch calls the Exa API directly when `.exa-api-key` exists, falling back to DuckDuckGo/Mojeek without a key
 - `researcher-mcp` is still shell-script based for now and expected to resolve via `.opencode/researcher-mcp.sh`
 - Actual API keys should be in `.env` or `~/.config/opencode/.exa-api-key`, outside tracked config
 
@@ -289,7 +282,7 @@ Project skill available:
 
 - [OpenCode](https://opencode.ai) AI CLI
 - Node.js / Bun runtime
-- [uv](https://docs.astral.sh/uv/) for the pinned Hound runtime
+- Go toolchain (to build the `gofetch-mcp` submodule)
 - LaTeX installation (for document generation)
 - API keys for enabled MCP servers that use explicit headers
 

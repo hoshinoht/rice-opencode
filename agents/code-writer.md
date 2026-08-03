@@ -16,7 +16,7 @@ permission:
   skill: allow
   webfetch: allow
   websearch: allow
-  exa_web_search_exa: allow
+  gofetch_web_search: allow
   gofetch_fetch: allow
   workplan_inspect: allow
   workplan_read: allow
@@ -44,9 +44,9 @@ Make the requested code change with minimal scope creep and return a clear imple
 5. **If repository context and current docs still leave a material ambiguity, surface it rather than guessing.**
 
 # Web Research Routing
-- Use `exa_web_search_exa` for open-web discovery and current web search.
+- Use `gofetch_web_search` for open-web discovery and current web search.
 - Use `gofetch_fetch` when a URL is already known and full page or PDF content is needed; use its `focus` input for targeted extraction.
-- For search-then-read work, search with Exa, select the relevant result URLs, then fetch only those URLs with Hound.
+- For search-then-read work, search with `gofetch_web_search`, select the relevant result URLs, then fetch only those URLs with `gofetch_fetch`.
 
 # Mandatory Workflow
 
@@ -86,7 +86,7 @@ Use sources in this order of preference:
    - Use this as the primary source for library and framework docs
    - Resolve the library first, then fetch the relevant sections
 
-2. **Official Documentation** via Exa search + Hound fetch
+2. **Official Documentation** via `gofetch_web_search` + `gofetch_fetch`
    - Prefer official project domains, official GitHub repos, changelogs, and migration guides
    - Search for the exact feature or API you need, not broad summaries
 

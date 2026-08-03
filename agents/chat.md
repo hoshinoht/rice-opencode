@@ -22,9 +22,9 @@ Think critically before execution. If the user's understanding is flawed, correc
 7. Execute adhering to best practices
 
 # Web Research Routing
-- Use `exa_web_search_exa` for open-web discovery and current web search.
+- Use `gofetch_web_search` for open-web discovery and current web search.
 - Use `gofetch_fetch` when a URL is already known and full page or PDF content is needed; use its `focus` input for targeted extraction.
-- For search-then-read work, search with Exa, select the relevant result URLs, then fetch only those URLs with Hound.
+- For search-then-read work, search with `gofetch_web_search`, select the relevant result URLs, then fetch only those URLs with `gofetch_fetch`.
 
 # CRITICAL:  Instruction Adherence
 Before taking ANY action, re-read the user's original request.

@@ -9,7 +9,7 @@ This repository contains my OpenCode-AI configuration, including:
 - **Custom agents** - Specialized AI agent prompts for different tasks
 - **Document generation plugin package** - Plugin-v2-compliant Pandoc-based docs tools under `packages/docs`
 - **Templates** - LaTeX templates for IEEE papers, school reports (SIT/UofG)
-- **MCP server configs** - GitHub, Context7, DeepWiki, Exa search, Hound fetch, DDG fallback
+- **MCP server configs** - GitHub, Context7, DeepWiki, gofetch (search + fetch), researcher-mcp; remote Exa entry kept but disabled
 
 ## Structure
 
@@ -104,15 +104,14 @@ Its tool implementation provides:
    ```
    Save the raw Exa API key without a trailing newline in `~/.config/opencode/.exa-api-key`, then run `chmod 600 ~/.config/opencode/.exa-api-key`.
 3. Install dependencies: `bun install` or `npm install`
-4. Prewarm the pinned Hound tool: `uvx --from 'hound-mcp[all]==12.4.1' hound -v`
-5. Run `uvx --from 'hound-mcp[all]==12.4.1' hound --doctor`, then install Chromium only if the doctor reports it missing
-6. Verify Exa and Hound with `opencode mcp list`; Exa uses the `x-api-key` header and has OAuth disabled
+4. Build the gofetch binary: `git submodule update --init mcps/gofetch-mcp && make -C mcps/gofetch-mcp build`
+5. Verify gofetch with `opencode mcp list`; the remote Exa entry stays disabled — gofetch reads `.exa-api-key` directly
 
 ## Notes
 
 - `opencode.json` uses `{env:VAR}` and `{file:path}` substitutions for secrets - safe to commit
-- open-web search routes to `exa_web_search_exa`; known-URL retrieval routes to `hound_smart_fetch`
-- Hound's duplicate `hound_smart_search` tool is disabled
+- open-web search routes to `gofetch_web_search`; known-URL retrieval routes to `gofetch_fetch`
+- the remote Exa MCP entry is disabled; gofetch uses the Exa API when a key is present, with keyless DuckDuckGo/Mojeek fallback
 - the docs plugin is loaded locally from `./packages/docs`
 - `researcher-mcp` still expects a shell-script launcher path for now
 - Actual API keys should be in `.env` or `~/.config/opencode/.exa-api-key`, outside tracked config

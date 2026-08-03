@@ -242,7 +242,7 @@
       "headers": {
         "x-api-key": "{file:~/.config/opencode/.exa-api-key}"
       },
-      "enabled": true
+      "enabled": false
     },
     "gofetch": {
       "type": "local",

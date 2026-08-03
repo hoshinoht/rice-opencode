@@ -23,7 +23,7 @@ permission:
   workplan_update: allow
   workplan_list: allow
   workplan_validate: allow
-  exa_web_search_exa: allow
+  gofetch_web_search: allow
   gofetch_fetch: allow
 ---
 
@@ -44,9 +44,9 @@ Complete non-trivial software tasks through a controlled loop of structure disco
 - each delegated subtask has enough context to execute without guessing workspace root, scope, or validation target
 
 # Web research routing
-- Use `exa_web_search_exa` for open-web discovery and current web search.
+- Use `gofetch_web_search` for open-web discovery and current web search.
 - Use `gofetch_fetch` when a URL is already known and full page or PDF content is needed; use its `focus` input for targeted extraction.
-- For search-then-read work, search with Exa, select the relevant result URLs, then fetch only those URLs with Hound.
+- For search-then-read work, search with `gofetch_web_search`, select the relevant result URLs, then fetch only those URLs with `gofetch_fetch`.
 
 # Workflow
 - Start with `@explore` when project structure is still unclear.

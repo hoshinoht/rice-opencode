@@ -1,7 +1,7 @@
 ---
 description: General interactive agent. User-facing chat, planning, and safe execution.
 mode: primary
-model: openai/gpt-5.6-sol
+model: openai/gpt-5.6-terra
 variant: high
 permission:
   "*": allow

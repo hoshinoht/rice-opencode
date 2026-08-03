@@ -3,6 +3,8 @@ description: |
   Primary software engineering workspace agent. Orchestrates planning,
   implementation, validation, and review loops for non-trivial code changes.
 mode: primary
+model: openai/gpt-5.6-sol
+variant: xhigh
 temperature: 0.2
 permission:
   github_*: allow

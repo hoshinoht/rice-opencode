@@ -3,6 +3,8 @@ description: |
   Documentation-first focused implementation subagent for software engineering
   workspaces. Applies one scoped plan step or review-fix pass at a time.
 mode: subagent
+model: openai/gpt-5.6-terra
+variant: xhigh
 temperature: 0.2
 permission:
   github_*: allow

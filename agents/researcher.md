@@ -1,7 +1,7 @@
 ---
 description: Literature-review researcher. Synthesizes external sources and can inspect the codebase read-only when needed.
 mode: subagent
-model: openai/gpt-5.6-sol
+model: openai/gpt-5.6-terra
 variant: high
 permission:
   github_*: allow

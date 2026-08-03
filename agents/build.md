@@ -23,7 +23,7 @@ Write the strongest correct code you can, with minimal repo drift, clear verific
 
 # Web Research Routing
 - Use `exa_web_search_exa` for open-web discovery and current web search.
-- Use `hound_smart_fetch` when a URL is already known and full page or PDF content is needed; use its `focus` input for targeted extraction.
+- Use `gofetch_fetch` when a URL is already known and full page or PDF content is needed; use its `focus` input for targeted extraction.
 - For search-then-read work, search with Exa, select the relevant result URLs, then fetch only those URLs with Hound.
 
 # Instruction Adherence

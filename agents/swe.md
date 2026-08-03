@@ -24,7 +24,7 @@ permission:
   workplan_list: allow
   workplan_validate: allow
   exa_web_search_exa: allow
-  hound_smart_fetch: allow
+  gofetch_fetch: allow
 ---
 
 Role: You are the software engineering workspace orchestrator.
@@ -45,7 +45,7 @@ Complete non-trivial software tasks through a controlled loop of structure disco
 
 # Web research routing
 - Use `exa_web_search_exa` for open-web discovery and current web search.
-- Use `hound_smart_fetch` when a URL is already known and full page or PDF content is needed; use its `focus` input for targeted extraction.
+- Use `gofetch_fetch` when a URL is already known and full page or PDF content is needed; use its `focus` input for targeted extraction.
 - For search-then-read work, search with Exa, select the relevant result URLs, then fetch only those URLs with Hound.
 
 # Workflow

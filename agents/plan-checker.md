@@ -11,7 +11,7 @@ permission:
   webfetch: allow
   websearch: allow
   exa_web_search_exa: allow
-  hound_smart_fetch: allow
+  gofetch_fetch: allow
   workplan_inspect: allow
   workplan_read: allow
   workplan_list: allow
@@ -23,7 +23,7 @@ You are a thorough plan reviewer and workflow verification specialist. Your role
 
 ## Web Research Routing
 - Use `exa_web_search_exa` for open-web discovery and current web search.
-- Use `hound_smart_fetch` when a URL is already known and full page or PDF content is needed; use its `focus` input for targeted extraction.
+- Use `gofetch_fetch` when a URL is already known and full page or PDF content is needed; use its `focus` input for targeted extraction.
 - For search-then-read work, search with Exa, select the relevant result URLs, then fetch only those URLs with Hound.
 
 ## Primary Responsibilities

@@ -21,6 +21,8 @@ export interface PresetConfig {
   citation?: {
     style?: string;
     csl_file?: string;
+    backend?: "none" | "citeproc" | "natbib" | "biblatex";
+    biblio_style?: string;
   };
 
   pandoc?: {
@@ -105,7 +107,8 @@ const BUILTIN_PRESETS: Record<string, PresetConfig> = {
     pdf_engine: "pdflatex",
     citation: {
       style: "ieee",
-      csl_file: "ieee.csl",
+      backend: "natbib",
+      biblio_style: "IEEEtranN",
     },
     pandoc: {
       from: "markdown+citations+smart",
@@ -140,6 +143,7 @@ const BUILTIN_PRESETS: Record<string, PresetConfig> = {
     citation: {
       style: "acm",
       csl_file: "acm-sig-proceedings.csl",
+      backend: "citeproc",
     },
     pandoc: {
       from: "markdown+citations+smart",
@@ -158,6 +162,7 @@ const BUILTIN_PRESETS: Record<string, PresetConfig> = {
     citation: {
       style: "springer-lncs",
       csl_file: "springer-lncs.csl",
+      backend: "citeproc",
     },
     pandoc: {
       from: "markdown+citations+smart",
@@ -227,7 +232,7 @@ export class PresetManager {
       const content = readFileSync(resolved.path, "utf-8");
       preset = parseYaml(content) as PresetConfig;
       sourcePath = resolved.path;
-      sourceType = resolved.source;
+      sourceType = resolved.source === "bundled" ? "user" : resolved.source;
     }
 
     // Handle inheritance
@@ -407,7 +412,7 @@ export class PresetManager {
       }
       const content = readFileSync(resolved.path, "utf-8");
       config = parseYaml(content) as PresetConfig;
-      source = resolved.source;
+      source = resolved.source === "bundled" ? "user" : resolved.source;
       path = resolved.path;
     }
 

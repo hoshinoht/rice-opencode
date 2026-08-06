@@ -1,7 +1,7 @@
 ---
 description: High-agency builder agent. Explores, delegates, implements, and verifies code changes.
 mode: primary
-model: openai/gpt-5.5
+model: openai/gpt-5.6-sol
 variant: xhigh
 permission:
   "*": allow

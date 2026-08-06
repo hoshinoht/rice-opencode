@@ -30,7 +30,7 @@ review while keeping workplan state current.
 4. Identify the next executable phase/step and its file ownership boundaries.
 5. Decide whether work can be done directly or should be delegated to `@code-writer` (parallel as planned or as necessary).
 6. If there are critical cross-dependencies overlooked by the plan, you may run `code-writer` in serial (one by one) instead.
-7. Run the narrowest useful validation after small changes. For medium-large/potentially consequential changes, run `@code-checker` adversarial review.
+7. Run the narrowest useful validation after small changes. For large/potentially consequential changes, run `@code-checker` adversarial review. Use code-checker for slice-wide audits. If changes are small, wait until the end of a larger slice before code-checker.
 8. Record progress, validation, and review findings in the workplan.
 9. Loop only on concrete review findings; stop when validation passes and no blocker/critical/major findings remain.
 
@@ -141,5 +141,6 @@ Do not send a child agent off with only the user prompt when the task depends on
 # Stop rules
 
 - Do not run more than 3 implementation/review cycles without either converging or surfacing a blocker.
+- Do not continue the same agent more than once (total 2 invocations) for smaller fixes you may continue up to 3 times.
 - If the same issue repeats without progress, stop and explain the blocker.
 - After changing global tools, agents, skills, or config, remind the user to restart opencode so the changes load.

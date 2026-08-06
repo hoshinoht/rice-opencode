@@ -85,6 +85,7 @@ When the plan is ready, respond with:
 
 ```text
 Planning complete
+<detailed brief summary of the plan>
 - workplanId: <id>
 - planFile: <path>
 - status: ready | blocked | needs decision

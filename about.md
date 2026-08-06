@@ -1,14 +1,13 @@
 # rice-opencode
 
-Personal OpenCode configuration preset and separate plugin packages.
+Personal OpenCode configuration preset with optional experimental packages.
 
 ## What is this?
 
 This repository contains my OpenCode-AI configuration, including:
 
 - **Custom agents** - Specialized AI agent prompts for different tasks
-- **Document generation plugin package** - Plugin-v2-compliant Pandoc-based docs tools under `packages/docs`
-- **Templates** - LaTeX templates for IEEE papers, school reports (SIT/UofG)
+- **Templates** - Reusable LaTeX templates for IEEE papers and SIT/UofG reports
 - **MCP server configs** - GitHub, Context7, DeepWiki, Exa search, Hound fetch, DDG fallback
 
 ## Structure
@@ -17,31 +16,21 @@ This repository contains my OpenCode-AI configuration, including:
 ├── agents/           # Agent prompt files
 ├── commands/         # Slash commands
 ├── skills/           # Skills
-├── packages/docs/    # Main docs plugin package
 ├── packages/viz/     # Experimental viz plugin package (not loaded by default)
 ├── pandoc/
 │   ├── assets/       # Logo images (SIT, UofG)
 │   └── templates/    # LaTeX templates
-└── opencode.json     # Main OpenCode config preset + local plugin path
+└── opencode.json     # Main OpenCode config preset
 ```
 
 ## Architecture Notes
 
-This repo is no longer just "one plugin".
+The stable surface is the config/preset layer: `agents`, `commands`, `skills`,
+and `opencode.json`.
 
-It is split into:
-
-- a **config/preset layer** (`agents`, `commands`, `skills`, `opencode.json`)
-- a **plugin package layer** (`packages/docs`, `packages/viz`, `packages/shared`)
-
-### Stable package
-
-`packages/docs` is the main stable package.
-
-- package name: `@rice-opencode/docs`
-- plugin-v2 server entrypoint: `packages/docs/src/server.ts`
-- implementation: `packages/docs/src/plugin.ts`
-- bundled templates/assets live under `packages/docs/pandoc/`
+The legacy `packages/docs` plugin and `docs-workflow` skill were removed in
+favor of Quarto. Their useful templates and logos remain under the root
+`pandoc/` directory.
 
 ### Experimental package
 
@@ -53,13 +42,8 @@ It is currently:
 - not loaded by default
 - not part of the stable user-facing path
 
-### Intent
-
-The current architecture is aiming for:
-
-- one clean, publishable docs plugin package
-- one local OpenCode preset that can load that package
-- room for a future all-in-one harness later, without forcing unfinished features into the default setup
+`packages/viz` and `packages/shared` remain optional package-level work and are
+not part of the stable default harness.
 
 ## Agents
 
@@ -73,26 +57,11 @@ The current architecture is aiming for:
 | code-checker | GPT-5.5 | Code review and verification |
 | document-proofreader | GPT-5.5 | Academic proofreading and argument review |
 
-## Document Plugin
+## Document Templates
 
-The main docs package is `@rice-opencode/docs` with a plugin-v2 server entrypoint at `packages/docs/src/server.ts`.
-
-Its tool implementation provides:
-
-- `docs_convert` - Basic format conversion via pandoc
-- `docs_create_styled_pdf` - Professional PDFs with Eisvogel template
-- `docs_create_ieee_paper` - IEEE two-column conference papers
-- `docs_templates_list` - List installed templates
-- `docs_templates_install` - Install templates (eisvogel, ieee) and CSL styles
-- `docs_presets_list` / `docs_presets_show` - Manage document presets
-- `docs_create` - Universal document creation with preset support
-
-### Presets
-
-- `school-report` - SIT/UofG reports with logo support (`--logo sit|uofg|both`)
-- `ieee-conference` - IEEE two-column conference papers
-- `ieee-journal` - IEEE journal format
-- `eisvogel` - General professional documents
+Quarto supersedes the removed custom docs plugin. The repository retains IEEE
+and SIT/UofG LaTeX templates plus logos under `pandoc/` for reuse with Quarto,
+Pandoc, or direct LaTeX workflows.
 
 ## Setup
 
@@ -113,7 +82,6 @@ Its tool implementation provides:
 - `opencode.json` uses `{env:VAR}` and `{file:path}` substitutions for secrets - safe to commit
 - open-web search routes to `exa_web_search_exa`; known-URL retrieval routes to `hound_smart_fetch`
 - Hound's duplicate `hound_smart_search` tool is disabled
-- the docs plugin is loaded locally from `./packages/docs`
 - `researcher-mcp` still expects a shell-script launcher path for now
 - Actual API keys should be in `.env` or `~/.config/opencode/.exa-api-key`, outside tracked config
-- Templates require LaTeX installation (texlive-full recommended)
+- Quarto is preferred for document authoring; retained templates require LaTeX for PDF output

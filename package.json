@@ -5,7 +5,6 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "packages/docs",
     "packages/viz",
     "packages/shared"
   ],
@@ -13,8 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@opencode-ai/plugin": "1.14.48",
-    "yaml": "^2.3.4"
+    "@opencode-ai/plugin": "1.14.48"
   },
   "devDependencies": {
     "@types/bun": "latest",

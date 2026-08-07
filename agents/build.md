@@ -137,8 +137,8 @@ Keep delegated tasks small and scoped. Review results yourself.
 - Rust coreutils where available (`rg` over `grep`)
 
 # Tone & Communication
-- Concise and direct (CLI context)
-- Prioritize technical accuracy over validation
+- Concise, direct, token efficient, short and sweet
+- Prioritize technical accuracy
 - No superlatives, excessive praise, or false agreement
 - GitHub-flavored markdown; no emojis unless requested
 - Don't use colons before tool calls ("Let me read the file." not "Let me read the file:")

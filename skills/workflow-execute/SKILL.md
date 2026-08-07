@@ -143,4 +143,3 @@ Do not send a child agent off with only the user prompt when the task depends on
 - Do not run more than 3 implementation/review cycles without either converging or surfacing a blocker.
 - Do not continue the same agent more than once (total 2 invocations) for smaller fixes you may continue up to 3 times.
 - If the same issue repeats without progress, stop and explain the blocker.
-- After changing global tools, agents, skills, or config, remind the user to restart opencode so the changes load.

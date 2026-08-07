@@ -28,7 +28,14 @@ describe("WorkflowCompactionPlugin", () => {
     expect("prompt" in output).toBe(false);
   });
 
-  it("contains the agreed conditional appendix", () => {
+  it("explicitly amends OpenCode's exact output template", () => {
+    expect(WORKFLOW_COMPACTION_CONTEXT).toContain("IMPORTANT TEMPLATE AMENDMENT");
+    expect(WORKFLOW_COMPACTION_CONTEXT).toContain(
+      "The exact Markdown structure above is amended by this instruction.",
+    );
+    expect(WORKFLOW_COMPACTION_CONTEXT).toContain(
+      "immediately after the `## Relevant Files` section",
+    );
     expect(WORKFLOW_COMPACTION_CONTEXT).toContain("### Workflow Status");
     expect(WORKFLOW_COMPACTION_CONTEXT).toContain(
       '- Continuation requirement: [workflow-plan: "Load the workflow-plan skill before continuing." | workflow-execute: "Load the workflow-execute skill before continuing."]',

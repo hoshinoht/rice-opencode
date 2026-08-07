@@ -1,6 +1,8 @@
 import type { Plugin } from "@opencode-ai/plugin";
 
-export const WORKFLOW_COMPACTION_CONTEXT = `Append this section only if an active workplan is currently being planned or executed. Otherwise, omit it entirely.
+export const WORKFLOW_COMPACTION_CONTEXT = `IMPORTANT TEMPLATE AMENDMENT: The exact Markdown structure above is amended by this instruction.
+
+If and only if an active workplan is currently being planned or executed, append the following section immediately after the \`## Relevant Files\` section. Otherwise, omit it entirely.
 
 ### Workflow Status
 - Mode: workflow-plan | workflow-execute

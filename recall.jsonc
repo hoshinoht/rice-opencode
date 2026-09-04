@@ -1,0 +1,43 @@
+// Configuration for the opencode-recall plugin (~/opencode-recall).
+// All keys are optional — omitted keys use the defaults shown here.
+{
+  // Source and index databases
+  "sourceDb": "~/.local/share/opencode/opencode.db",
+  "indexDb": "~/.local/share/opencode-recall/index.db",
+
+  "embedding": {
+    // "llama-server" (auto-spawned), "openai-compatible" (point endpoint at LM Studio etc.), or "off"
+    "provider": "llama-server",
+    "endpoint": "http://127.0.0.1:8837",
+    "modelPath": "~/.local/share/opencode-recall/models/nomic-embed-text-v1.5.Q8_0.gguf",
+    "dims": 768,
+    "autoStart": true,
+    "timeoutMs": 1500,      // interactive query embeds
+    "batchTimeoutMs": 30000 // indexing batch embeds
+  },
+
+  "index": {
+    "includeSubagents": false,
+    "minPromptChars": 20,
+    "chunkChars": 1200,
+    "overlapChars": 150,
+    "maxChunksPerPart": 20,
+    "maxChunksPerSession": 500
+  },
+
+  "injection": {
+    "enabled": true,
+    "injectOn": "first",          // "first" | "always"
+    "agents": ["plan", "build"],  // primary agents only; never subagents
+    "maxSnippets": 3,
+    "snippetChars": 350,
+    "minCosine": 0.55             // vector evidence gate; nothing injected in FTS-only degraded mode
+  },
+
+  "search": {
+    "k": 8,
+    "candidates": 50,
+    "rrfK": 60,
+    "maxPerSession": 2
+  }
+}

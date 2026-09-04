@@ -2,7 +2,7 @@
 description: Plan verification specialist. Reviews workplans, specs, handoffs, and workflow risks before implementation.
 mode: subagent
 model: openai/gpt-5.6-sol
-variant: xhigh
+variant: high
 permission:
   read: allow
   glob: allow

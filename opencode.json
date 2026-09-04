@@ -5,202 +5,223 @@
     "opencode-antigravity-auth@latest",
     "opencode-anthropic-auth@latest",
     "@mohak34/opencode-notifier@latest",
-    "opencode-mem@2.13.0",
+    "opencode-mem",
     "opencode-background-agents@0.1.1",
-    "/Users/cantabile/opencode-anthropic-auth"
+    "/Users/cantabile/opencode-anthropic-auth",
+    "/Users/cantabile/opencode-recall",
+    "./src/plugins/qwen-single-system.ts"
   ],
   "agent": {
     "plan": {
-      "description": "Strategic planning agent. Analyzes requirements and creates implementation plans.",
+      "description": "Strategic planning agent. Analyzes requirements, delegates research, and creates implementation plans.",
       "mode": "primary",
       "model": "openai/gpt-5.6-sol",
       "variant": "xhigh",
       "prompt": "{file:prompts/planner-prompt.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "websearch": true,
-        "webfetch": true,
-        "write": false,
-        "edit": false
+
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "websearch": "allow",
+        "webfetch": "allow",
+        "edit": "deny",
+
+        "bash": {
+          "*": "ask",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "git show*": "allow",
+          "git branch*": "allow"
+        },
+
+        "task": {
+          "*": "deny",
+          "explore": "allow",
+          "docs-first-coder": "allow",
+          "code-checker": "allow",
+          "document-proofreader": "allow"
+        }
       }
     },
     "build": {
-      "description": "Primary builder agent. Executes implementation with best practices.",
+      "description": "Primary implementation agent. Executes approved plans, delegates specialist work, tests changes, and verifies results.",
       "mode": "primary",
       "model": "openai/gpt-5.6-sol",
-      "variant": "xhigh",
+      "variant": "high",
       "prompt": "{file:prompts/builder-prompt.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "websearch": true,
-        "webfetch": true
+
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "edit": "allow",
+        "websearch": "allow",
+        "webfetch": "allow",
+
+        "bash": {
+          "*": "allow",
+          "git push*": "ask",
+          "git reset --hard*": "ask",
+          "git clean*": "ask",
+          "rm -rf*": "ask"
+        },
+
+        "task": {
+          "*": "deny",
+          "explore": "allow",
+          "docs-first-coder": "allow",
+          "frontend-engineer": "allow",
+          "code-checker": "allow",
+          "document-writer": "allow",
+          "document-proofreader": "allow"
+        }
       }
     },
-    "Explore": {
-      "disable": true
-    },
+
     "explore": {
-      "description": "Fast file system navigator. Locates files, logs, configs, or code relevant to tasks.",
-      "mode": "all",
+      "description": "Fast read-only repository navigator. Locates files, symbols, configuration, logs, and relevant implementation details.",
+      "mode": "subagent",
       "model": "openai/gpt-5.6-luna",
-      "variant": "xhigh",
+      "variant": "high",
       "prompt": "{file:agents/explore.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "write": false,
-        "edit": false,
-        "websearch": false,
-        "webfetch": false
+
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "edit": "deny",
+        "websearch": "deny",
+        "webfetch": "deny",
+
+        "bash": {
+          "*": "deny",
+          "git status*": "allow",
+          "git log*": "allow",
+          "git show*": "allow",
+          "git diff*": "allow"
+        },
+
+        "task": "deny"
       }
     },
+
     "docs-first-coder": {
-      "description": "Documentation-first coding expert. Verifies APIs against current docs before implementation.",
+      "description": "Documentation-first implementation specialist. Verifies external APIs against authoritative documentation before modifying code.",
       "mode": "subagent",
       "model": "openai/gpt-5.6-terra",
-      "variant": "xhigh",
+      "variant": "high",
       "prompt": "{file:agents/docs-first-coder.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "webfetch": true,
-        "websearch": true
+
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "edit": "allow",
+        "bash": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "task": "deny"
       }
     },
+
     "frontend-engineer": {
-      "description": "Frontend experience specialist. Designs and implements distinctive, production-grade UIs.",
+      "description": "Frontend specialist for production-grade UI architecture, accessibility, responsiveness, interaction, and visual implementation.",
       "mode": "subagent",
       "model": "openai/gpt-5.6-terra",
-      "variant": "xhigh",
+      "variant": "high",
       "prompt": "{file:agents/frontend-engineer.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "webfetch": true,
-        "websearch": true
+
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "edit": "allow",
+        "bash": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "task": "deny"
       }
     },
+
     "code-checker": {
-      "description": "Code verification specialist. Three-pillar analysis: smells, spec alignment, correctness.",
+      "description": "Read-only verification specialist. Reviews correctness, maintainability, specification alignment, tests, edge cases, and regressions.",
       "mode": "subagent",
       "model": "openai/gpt-5.6-terra",
-      "variant": "xhigh",
+      "variant": "high",
       "prompt": "{file:agents/code-checker.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "write": false,
-        "edit": false,
-        "websearch": false,
-        "webfetch": false
+
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "lsp": "allow",
+        "edit": "deny",
+
+        "bash": {
+          "*": "ask",
+          "git diff*": "allow",
+          "git status*": "allow",
+          "git log*": "allow"
+        },
+
+        "websearch": "deny",
+        "webfetch": "deny",
+        "task": "deny"
       }
     },
-    "esp32-tdd-coder": {
-      "description": "ESP32 embedded systems coder following TDD principles. Refuses code without tests unless overridden.",
-      "mode": "subagent",
-      "model": "openai/gpt-5.6-terra",
-      "variant": "xhigh",
-      "prompt": "{file:agents/esp32-tdd-coder.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "websearch": false,
-        "webfetch": false
-      }
-    },
-    "esp32-tdd-test-writer": {
-      "description": "ESP32 TDD test writer. Generates unit tests from technical design docs. Rejects sparse docs.",
-      "mode": "subagent",
-      "model": "openai/gpt-5.6-terra",
-      "variant": "xhigh",
-      "prompt": "{file:agents/esp32-tdd-test-writer.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "websearch": false,
-        "webfetch": false
-      }
-    },
+
     "document-writer": {
-      "description": "Creates professional documents, academic papers, and reports using pandoc.",
+      "description": "Professional technical and academic document author using the configured document toolchain.",
       "mode": "subagent",
       "model": "openai/gpt-5.6-terra",
-      "variant": "xhigh",
+      "variant": "high",
       "prompt": "{file:agents/document-writer.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "docs_convert": true,
-        "docs_compile_latex": true,
-        "docs_presets_list": true,
-        "docs_presets_show": true,
-        "docs_templates_list": true,
-        "docs_templates_install": true,
-        "docs_create": true,
-        "docs_create_ieee_paper": true,
-        "docs_create_school_report": true,
-        "docs_create_styled_pdf": true,
-        "webfetch": false,
-        "websearch": false
+
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "edit": "allow",
+
+        "bash": {
+          "*": "ask",
+          "pandoc *": "allow",
+          "latexmk *": "allow",
+          "pdflatex *": "allow",
+          "xelatex *": "allow"
+        },
+
+        "webfetch": "deny",
+        "websearch": "deny",
+        "task": "deny",
+
+        "docs_*": "allow"
       }
     },
+
     "document-proofreader": {
-      "description": "Academic proofreader. Reviews documents for writing quality, evidence gaps, and logical issues. Read-only.",
+      "description": "Read-only academic and technical reviewer. Checks writing, evidence, structure, reasoning, consistency, and unsupported claims.",
       "mode": "subagent",
       "model": "openai/gpt-5.6-terra",
-      "variant": "xhigh",
+      "variant": "high",
       "prompt": "{file:agents/document-proofreader.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "websearch": true,
-        "webfetch": true,
-        "write": false,
-        "edit": false
+
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "edit": "deny",
+
+        "bash": {
+          "*": "deny",
+          "git diff*": "allow"
+        },
+
+        "websearch": "allow",
+        "webfetch": "allow",
+        "task": "deny"
       }
     }
   },
@@ -252,6 +273,38 @@
         "$HOME/.config/opencode/mcps/gofetch-mcp/bin/gofetch"
       ],
       "enabled": true
+    },
+    "ats-tailor": {
+      "type": "local",
+      "command": [
+        "sh",
+        "-c",
+        "uv run --project $HOME/projects/personal/resume/ats-tailor ats-tailor mcp --repo $HOME/projects/personal/resume"
+      ],
+      "enabled": true
     }
+  },
+  "provider": {
+    "vllm-hotaisle": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "LocalLLM",
+      "options": {
+        "baseURL": "http://promaxgb10-f4db.tailab1c77.ts.net:8000/v1",
+        "apiKey": "sk-no-key-required"
+      },
+      "models": {
+        "HauhauCS/Qwen3.6-35B-A3B-Uncensored-HauhauCS-Aggressive": {
+          "name": "Qwen3.6 35B A3B HauhauCS Aggressive FP8",
+          "limit": {
+            "context": 131072,
+            "output": 8192
+          }
+        }
+      }
+    }
+  },
+  "permission": {
+    "edit": "allow",
+    "bash": "allow"
   }
 }

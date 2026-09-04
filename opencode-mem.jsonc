@@ -34,8 +34,9 @@
     "enabled": true,
     "memoryLimit": 5
   },
+  // Disabled: opencode-recall now handles first-message context injection.
   "chatMessage": {
-    "enabled": true,
+    "enabled": false,
     "maxMemories": 3,
     "excludeCurrentSession": true,
     "maxAgeDays": 60,

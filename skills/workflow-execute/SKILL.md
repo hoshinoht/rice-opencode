@@ -26,7 +26,7 @@ For this global harness, when `workplan_validate` is absent, build can run the r
 3. Load `agent-use`. Delegate bounded engineering to `code-writer` or `frontend-engineer`, retaining Sol for decisions and integration. Work directly for a small task or when one coherent reasoning context is needed. Delegate only independent meaningful slices with disjoint ownership. Serialize shared-file work.
 4. Require the worker to run relevant self-checks and return the standard receipt. The parent reconciles outputs, inspects the diff and updates shared state once. Workers do not edit the shared workplan.
 5. Use `tester` for additional specified checks, bug reproduction or collecting high-volume test evidence when that saves work. Reuse already valid checks for the same code state instead of automatically running them again. A tester reports failures; the implementer fixes them.
-6. For medium/large or consequential changes, obtain a fresh `code-checker` review with exact scope, acceptance criteria, current diff and evidence. Reviewers do not repair the implementation. Track findings durably and return concrete corrections to the appropriate worker.
+6. For medium/large or consequential changes, obtain a fresh `code-checker` review with exact scope, acceptance criteria, current diff and evidence. Use code-checker for slice-wide audits; for small changes, wait until the end of a larger slice before review. Reviewers do not repair the implementation. Track findings durably and return concrete corrections to the appropriate worker.
 7. After each meaningful pass, record code state, worker/session id, attempts, changed files, acceptance evidence, validation commands/results, findings and next step. Update the JSON statuses and Markdown detail with localized edits.
 8. Continue the next ready package without generic permission questions. Stop when the completion gate passes or a concrete blocker/decision requires input.
 
@@ -38,7 +38,7 @@ Record review severities as `blocker`, `critical`, `major`, `minor`, `note`, `qu
 
 # Convergence and acceptance
 
-After two failed substantive fixes, reassess the hypothesis with Sol; consult oracle for contradictory evidence or exceptional uncertainty. Resume the worker for a specific correction when native continuation is available. Stop after three non-converging implementation/review cycles and report remaining evidence and the decision needed. Do not repeat an unchanged failing approach or broaden scope to appease speculative review suggestions.
+After two failed substantive fixes, reassess the hypothesis with Sol; consult oracle for contradictory evidence or exceptional uncertainty. Resume the worker for a specific correction when native continuation is available. Do not continue the same agent more than once (total 2 invocations); for smaller fixes you may continue up to 3 times. Stop after three non-converging implementation/review cycles and report remaining evidence and the decision needed. Do not repeat an unchanged failing approach or broaden scope to appease speculative review suggestions.
 
 Before marking completed, check the original user outcome, current acceptance evidence, required validation, integration across slices, and absence of unresolved blocker/critical/major findings. An independently reviewed significant change may pass with non-blocking notes. If required verification is unavailable, report that limitation; never invent a passing check.
 

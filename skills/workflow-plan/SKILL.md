@@ -34,4 +34,4 @@ When tools are available:
 
 # Handoff
 
-Return STATUS: READY | BLOCKED with workspace root, workplan id, JSON and Markdown paths, scope, decisions/assumptions, work packages and ownership, acceptance/validation, plan-review coverage and remaining findings. READY is a handoff verdict, not a new JSON status enum. Include whether implementation was already requested or whether the user asked for a plan only. Do not ask for another generic approval when the parent already has implementation authorization.
+Return STATUS: READY | BLOCKED with a detailed brief summary of the plan, workspace root, workplan id, JSON and Markdown paths, scope, decisions/assumptions, work packages and ownership, acceptance/validation, plan-review coverage and remaining findings. READY is a handoff verdict, not a new JSON status enum. Include whether implementation was already requested or whether the user asked for a plan only. Do not ask for another generic approval when the parent already has implementation authorization.

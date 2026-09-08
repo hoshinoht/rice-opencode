@@ -1,257 +1,102 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "default_agent": "plan",
-  "plugin": [
-    "opencode-antigravity-auth@latest",
-    "opencode-anthropic-auth@latest",
-    "@mohak34/opencode-notifier@latest",
-    "opencode-mem@2.13.0",
-    "opencode-background-agents@0.1.1",
-    "/Users/cantabile/opencode-anthropic-auth"
-  ],
-  "agent": {
-    "plan": {
-      "description": "Strategic planning agent. Analyzes requirements and creates implementation plans.",
-      "mode": "primary",
-      "model": "openai/gpt-5.6-sol",
-      "variant": "xhigh",
-      "prompt": "{file:prompts/planner-prompt.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "websearch": true,
-        "webfetch": true,
-        "write": false,
-        "edit": false
-      }
+  "default_agent": "build",
+  "update": "notify",
+  "share": "disabled",
+  "agents": {
+    "general": {
+      "model": "openai/gpt-5.6-terra-1m#high"
     },
-    "build": {
-      "description": "Primary builder agent. Executes implementation with best practices.",
-      "mode": "primary",
-      "model": "openai/gpt-5.6-sol",
-      "variant": "xhigh",
-      "prompt": "{file:prompts/builder-prompt.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "websearch": true,
-        "webfetch": true
-      }
+    "compaction": {
+      "model": "openai/gpt-5.6-terra-1m#high"
     },
-    "Explore": {
-      "disable": true
+    "summary": {
+      "model": "openai/gpt-5.6-luna-1m#high"
     },
-    "explore": {
-      "description": "Fast file system navigator. Locates files, logs, configs, or code relevant to tasks.",
-      "mode": "all",
-      "model": "openai/gpt-5.6-luna",
-      "variant": "xhigh",
-      "prompt": "{file:agents/explore.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "write": false,
-        "edit": false,
-        "websearch": false,
-        "webfetch": false
-      }
-    },
-    "docs-first-coder": {
-      "description": "Documentation-first coding expert. Verifies APIs against current docs before implementation.",
-      "mode": "subagent",
-      "model": "openai/gpt-5.6-terra",
-      "variant": "xhigh",
-      "prompt": "{file:agents/docs-first-coder.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "webfetch": true,
-        "websearch": true
-      }
-    },
-    "frontend-engineer": {
-      "description": "Frontend experience specialist. Designs and implements distinctive, production-grade UIs.",
-      "mode": "subagent",
-      "model": "openai/gpt-5.6-terra",
-      "variant": "xhigh",
-      "prompt": "{file:agents/frontend-engineer.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "webfetch": true,
-        "websearch": true
-      }
-    },
-    "code-checker": {
-      "description": "Code verification specialist. Three-pillar analysis: smells, spec alignment, correctness.",
-      "mode": "subagent",
-      "model": "openai/gpt-5.6-terra",
-      "variant": "xhigh",
-      "prompt": "{file:agents/code-checker.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "write": false,
-        "edit": false,
-        "websearch": false,
-        "webfetch": false
-      }
-    },
-    "esp32-tdd-coder": {
-      "description": "ESP32 embedded systems coder following TDD principles. Refuses code without tests unless overridden.",
-      "mode": "subagent",
-      "model": "openai/gpt-5.6-terra",
-      "variant": "xhigh",
-      "prompt": "{file:agents/esp32-tdd-coder.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "websearch": false,
-        "webfetch": false
-      }
-    },
-    "esp32-tdd-test-writer": {
-      "description": "ESP32 TDD test writer. Generates unit tests from technical design docs. Rejects sparse docs.",
-      "mode": "subagent",
-      "model": "openai/gpt-5.6-terra",
-      "variant": "xhigh",
-      "prompt": "{file:agents/esp32-tdd-test-writer.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "websearch": false,
-        "webfetch": false
-      }
-    },
-    "document-writer": {
-      "description": "Creates professional documents, academic papers, and reports using pandoc.",
-      "mode": "subagent",
-      "model": "openai/gpt-5.6-terra",
-      "variant": "xhigh",
-      "prompt": "{file:agents/document-writer.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "docs_convert": true,
-        "docs_compile_latex": true,
-        "docs_presets_list": true,
-        "docs_presets_show": true,
-        "docs_templates_list": true,
-        "docs_templates_install": true,
-        "docs_create": true,
-        "docs_create_ieee_paper": true,
-        "docs_create_school_report": true,
-        "docs_create_styled_pdf": true,
-        "webfetch": false,
-        "websearch": false
-      }
-    },
-    "document-proofreader": {
-      "description": "Academic proofreader. Reviews documents for writing quality, evidence gaps, and logical issues. Read-only.",
-      "mode": "subagent",
-      "model": "openai/gpt-5.6-terra",
-      "variant": "xhigh",
-      "prompt": "{file:agents/document-proofreader.md}",
-      "temperature": 1.0,
-      "tools": {
-        "read": true,
-        "glob": true,
-        "grep": true,
-        "bash": true,
-        "websearch": true,
-        "webfetch": true,
-        "write": false,
-        "edit": false
-      }
+    "title": {
+      "model": "openai/gpt-5.6-luna-1m"
     }
   },
   "mcp": {
-    "github": {
-      "type": "remote",
-      "url": "https://api.githubcopilot.com/mcp/",
-      "headers": {
-        "Authorization": "Bearer {env:GITHUB_PAT}"
+    "servers": {
+      "deepwiki": {
+        "type": "remote",
+        "url": "https://mcp.deepwiki.com/mcp",
+        "disabled": false
       },
-      "enabled": false
-    },
-    "deepwiki": {
-      "type": "remote",
-      "url": "https://mcp.deepwiki.com/mcp",
-      "enabled": true
-    },
-    "context7": {
-      "type": "remote",
-      "url": "https://mcp.context7.com/mcp",
-      "headers": {
-        "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
+      "context7": {
+        "type": "remote",
+        "url": "https://mcp.context7.com/mcp",
+        "headers": {
+          "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
+        },
+        "disabled": false
       },
-      "enabled": true
-    },
-    "researcher-mcp": {
-      "type": "local",
-      "command": [
-        "sh",
-        "-c",
-        "$HOME/.config/opencode/mcps/researcher-mcp/bin/researcher-mcp"
-      ],
-      "enabled": true
-    },
-    "exa": {
-      "type": "remote",
-      "url": "https://mcp.exa.ai/mcp?tools=web_search_exa",
-      "oauth": false,
-      "headers": {
-        "x-api-key": "{file:~/.config/opencode/.exa-api-key}"
+      "researcher-mcp": {
+        "type": "local",
+        "command": [
+          "sh",
+          "-c",
+          "$HOME/.config/opencode/mcps/researcher-mcp/bin/researcher-mcp"
+        ],
+        "disabled": false
       },
-      "enabled": true
-    },
-    "gofetch": {
-      "type": "local",
-      "command": [
-        "sh",
-        "-c",
-        "$HOME/.config/opencode/mcps/gofetch-mcp/bin/gofetch"
-      ],
-      "enabled": true
+      "exa": {
+        "type": "remote",
+        "url": "https://mcp.exa.ai/mcp?tools=web_search_exa",
+        "oauth": false,
+        "headers": {
+          "x-api-key": "{env:EXA_API_KEY}"
+        },
+        "disabled": true
+      },
+      "gofetch": {
+        "type": "local",
+        "command": [
+          "sh",
+          "-c",
+          "$HOME/.config/opencode/mcps/gofetch-mcp/bin/gofetch"
+        ],
+        "disabled": false
+      },
+      "ats-tailor": {
+        "type": "local",
+        "command": [
+          "sh",
+          "-c",
+          "uv run --project $HOME/projects/personal/resume/ats-tailor ats-tailor mcp --repo $HOME/projects/personal/resume"
+        ],
+        "disabled": false
+      }
     }
-  }
+  },
+  "plugins": [
+    {
+      "package": "./packages/reasoning-router",
+      "options": {
+        "diagnosticsLimit": 100
+      }
+    },
+    {
+      "package": "./packages/quota-fallback",
+      "options": {
+        "enabled": true,
+        "retryDelayMs": 2000,
+        "maxSwitchesPerSession": 1,
+        "fallbacks": [
+          {
+            "model": {
+              "providerID": "opencode",
+              "id": "muse-spark-1.3-contributor-free"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "package": "./packages/openai-long-context"
+    }
+  ],
+  "providers": {},
+  "model": "openai/gpt-5.6-terra-1m"
 }

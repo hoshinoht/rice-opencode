@@ -9,7 +9,7 @@ This repository contains my OpenCode-AI configuration, including:
 - **Custom agents** - Specialized AI agent prompts for different tasks
 - **Document generation plugin package** - Plugin-v2-compliant Pandoc-based docs tools under `packages/docs`
 - **Templates** - LaTeX templates for IEEE papers, school reports (SIT/UofG)
-- **MCP server configs** - GitHub, Context7, DeepWiki, Exa search, Hound fetch, DDG fallback
+- **MCP server configs** - GitHub, Context7, DeepWiki, gofetch (search + fetch), researcher-mcp; remote Exa entry kept but disabled
 
 ## Structure
 
@@ -64,14 +64,19 @@ The current architecture is aiming for:
 ## Agents
 
 | Agent | Model | Purpose |
-|-------|-------|---------|
-| plan | GPT-5.5 | Requirements analysis and execution planning |
-| chat | GPT-5.5 | General interactive agent |
-| build | GPT-5.5 | High-agency implementation and verification |
-| explore | GPT-5.5 | Fast codebase navigation and file discovery |
-| docs-first-coder | GPT-5.5 | Documentation-verified coding |
-| code-checker | GPT-5.5 | Code review and verification |
-| document-proofreader | GPT-5.5 | Academic proofreading and argument review |
+| --- | --- | --- |
+| build | Sol Medium | Development routing, delegation, integration, and acceptance |
+| plan | Sol High | Requirements analysis and durable execution planning |
+| explore | Luna High | Fast codebase navigation and file discovery |
+| researcher | Terra High | External documentation and literature synthesis |
+| plan-checker | Sol High | Workplan and handoff verification |
+| code-writer | Terra Medium | Scoped documentation-first implementation |
+| frontend-engineer | Terra High | Frontend implementation and experience design |
+| tester | Luna Medium | Validation and reproduction without repairs |
+| code-checker | Sol High | Independent code review and verification |
+| oracle | Sol XHigh | Exceptional architecture and debugging advice |
+| document-writer | Terra Medium | Technical and academic document authorship |
+| document-proofreader | Terra High | Academic proofreading and argument review |
 
 ## Document Plugin
 
@@ -104,15 +109,14 @@ Its tool implementation provides:
    ```
    Save the raw Exa API key without a trailing newline in `~/.config/opencode/.exa-api-key`, then run `chmod 600 ~/.config/opencode/.exa-api-key`.
 3. Install dependencies: `bun install` or `npm install`
-4. Prewarm the pinned Hound tool: `uvx --from 'hound-mcp[all]==12.4.1' hound -v`
-5. Run `uvx --from 'hound-mcp[all]==12.4.1' hound --doctor`, then install Chromium only if the doctor reports it missing
-6. Verify Exa and Hound with `opencode mcp list`; Exa uses the `x-api-key` header and has OAuth disabled
+4. Build the gofetch binary: `git submodule update --init mcps/gofetch-mcp && make -C mcps/gofetch-mcp build`
+5. Verify gofetch with `opencode mcp list`; the remote Exa entry stays disabled — gofetch reads `.exa-api-key` directly
 
 ## Notes
 
 - `opencode.json` uses `{env:VAR}` and `{file:path}` substitutions for secrets - safe to commit
-- open-web search routes to `exa_web_search_exa`; known-URL retrieval routes to `hound_smart_fetch`
-- Hound's duplicate `hound_smart_search` tool is disabled
+- open-web search routes to `gofetch_web_search`; known-URL retrieval routes to `gofetch_fetch`
+- the remote Exa MCP entry is disabled; gofetch uses the Exa API when a key is present, with keyless DuckDuckGo/Mojeek fallback
 - the docs plugin is loaded locally from `./packages/docs`
 - `researcher-mcp` still expects a shell-script launcher path for now
 - Actual API keys should be in `.env` or `~/.config/opencode/.exa-api-key`, outside tracked config

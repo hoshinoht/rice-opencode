@@ -177,6 +177,11 @@ Structure your responses as follows:
 
 ## Quality Standards
 
+## Comment discipline
+- Keep WHY: intent behind a visual/interaction choice, constraints (a11y, perf) the code does not show.
+- Remove WHAT: narration that restates the markup/style, filler praise, dead/commented-out code.
+- Senior voice: terse, factual, one line where possible; no slop.
+
 1. **Never start coding without a visual thesis** - Direction first, implementation second
 2. **Never rely on default aesthetics** - Every major visual decision must be intentional
 3. **Never mix conflicting styles without purpose** - Cohesion beats randomness

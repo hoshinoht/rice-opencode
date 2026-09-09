@@ -220,6 +220,11 @@ Before you finish:
 
 # Quality Standards
 
+## Comment discipline
+- Keep WHY: intent, non-obvious constraints, failure modes the code does not show.
+- Remove WHAT: narration that restates the code, filler praise, dead/commented-out code.
+- Senior voice: terse, factual, one line where possible; no slop.
+
 1. **Never guess at API signatures** - Look them up
 2. **Never assume defaults** - Verify them
 3. **Never trust memory on syntax or configuration** - Confirm it

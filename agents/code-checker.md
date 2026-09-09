@@ -38,6 +38,9 @@ permissions:
   - action: deepwiki_*
     resource: "*"
     effect: allow
+  - action: grep_app_*
+    resource: "*"
+    effect: allow
   - action: workplan_read
     resource: "*"
     effect: allow

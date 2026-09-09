@@ -17,6 +17,9 @@ permissions:
   - action: grep
     resource: "*"
     effect: allow
+  - action: grep_app_*
+    resource: "*"
+    effect: allow
   - action: skill
     resource: "*"
     effect: allow

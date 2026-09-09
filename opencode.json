@@ -67,6 +67,12 @@
           "uv run --project $HOME/projects/personal/resume/ats-tailor ats-tailor mcp --repo $HOME/projects/personal/resume"
         ],
         "disabled": false
+      },
+      "grep_app": {
+        "type": "remote",
+        "url": "https://mcp.grep.app",
+        "oauth": false,
+        "disabled": false
       }
     }
   },
